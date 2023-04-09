@@ -40,31 +40,34 @@ async def on_message(ctx):
         "content": ctx.content
     })
 
-    async with ctx.channel.typing():
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0301",
-            messages=conversation_log,
-        )
+    try:
+        async with ctx.channel.typing():
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo-0301",
+                messages=conversation_log,
+            )
 
-        text = response["choices"][0]["message"]["content"]
+            text = response["choices"][0]["message"]["content"]
 
-        await asyncio.sleep(1)
+            await asyncio.sleep(1)
 
-        if len(text) > 2000:
-            message_parts = [text[i:i+2000]
-                             for i in range(0, len(text), 2000)]
-            for part in message_parts:
-                await ctx.channel.send(part)
-        else:
-            await ctx.channel.send(text)
+            if len(text) > 2000:
+                message_parts = [text[i:i+2000]
+                                 for i in range(0, len(text), 2000)]
+                for part in message_parts:
+                    await ctx.channel.send(part)
+            else:
+                await ctx.channel.send(text)
 
-    conversation_log.append({
-        "role": "system",
-        "content": text
-    })
+        conversation_log.append({
+            "role": "system",
+            "content": text
+        })
 
-    if (len(conversation_log) > 20):
-        conversation_log.pop(0)
+        if (len(conversation_log) > 20):
+            conversation_log.pop(0)
+    except Exception as e:
+        await ctx.channel.send(e)
 
 
 bot.run(config('BOT_TOKEN'))
