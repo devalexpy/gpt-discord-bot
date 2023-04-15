@@ -59,13 +59,13 @@ async def on_message(ctx):
             else:
                 await ctx.channel.send(text)
 
-        conversation_log.append({
-            "role": "system",
-            "content": text
-        })
+            conversation_log.append({
+                "role": "system",
+                "content": text
+            })
 
-        if (len(conversation_log) > 20):
-            conversation_log.pop(0)
+            if (len(conversation_log) > 10):
+                conversation_log.pop(0)
     except Exception as e:
         await ctx.channel.send(e)
 
